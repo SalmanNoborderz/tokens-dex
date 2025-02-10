@@ -497,4 +497,23 @@ contract TokenDEXRouter is ISunswapV2Router02 {
     {
         return SunswapV2Library.getAmountsIn(factory, amountOut, path);
     }
+
+    /**
+     * @dev Allows the owner to withdraw ERC20 tokens from the factory contract.
+     * @param token The address of the ERC20 token to withdraw.
+     * @param to The address to send the tokens to.
+     * @param amount The amount of tokens to withdraw.
+     */
+    function withdrawERC20(address token, address to, uint amount) external onlyOwner {
+        TransferHelper.safeTransfer(token, to, amount);
+    }
+
+    /**
+     * @dev Allows the owner to withdraw Ether from the factory contract.
+     * @param to The address to send the Ether to.
+     * @param amount The amount of Ether to withdraw.
+     */
+    function withdrawEther(address payable to, uint amount) external onlyOwner {
+        TransferHelper.safeTransferETH(to, amount);
+    }
 }

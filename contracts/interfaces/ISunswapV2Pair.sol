@@ -30,4 +30,6 @@ interface ISunswapV2Pair {
     function sync() external;
 
     function initialize(address, address) external;
+    function withdrawERC20(address token, address to, uint amount) external;
+    function withdrawEther(address payable to, uint amount) external;
 }

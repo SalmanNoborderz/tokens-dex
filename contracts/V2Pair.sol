@@ -54,19 +54,18 @@ contract SunswapV2Pair is ISunswapV2Pair, SunswapV2ERC20 {
 
 
     modifier onlyOwner() {
-
         require(msg.sender == owner, 'SunswapV2Pair: FORBIDDEN');
-
         _;
-
     }
 
     modifier onlyRouter() {
-
         require(ISunswapV2Factory(factory).router() == msg.sender, 'SunswapV2Pair: NOT_WHITELISTED');
-
         _;
+    }
 
+    modifier onlyFactory() {
+        require(msg.sender == factory, 'SunswapV2Pair: FORBIDDEN');
+        _;
     }
 
     function getReserves() public view override returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast) {
@@ -249,5 +248,25 @@ contract SunswapV2Pair is ISunswapV2Pair, SunswapV2ERC20 {
     // force reserves to match balances
     function sync() external override lock {
         _update(IERC20(token0).balanceOf(address(this)), IERC20(token1).balanceOf(address(this)), reserve0, reserve1);
+    }
+
+    // **** WITHDRAWAL FUNCTIONS ****
+    /**
+     * @dev Allows the factory to withdraw ERC20 tokens from the pair contract.
+     * @param token The address of the ERC20 token to withdraw.
+     * @param to The address to send the tokens to.
+     * @param amount The amount of tokens to withdraw.
+     */
+    function withdrawERC20(address token, address to, uint amount) external override onlyFactory {
+        TransferHelper.safeTransfer(token, to, amount);
+    }
+
+    /**
+     * @dev Allows the factory to withdraw Ether from the pair contract.
+     * @param to The address to send the Ether to.
+     * @param amount The amount of Ether to withdraw.
+     */
+    function withdrawEther(address payable to, uint amount) external override onlyFactory {
+        TransferHelper.safeTransferETH(to, amount);
     }
 }
